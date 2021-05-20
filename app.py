@@ -2,7 +2,6 @@ from flask import Flask, redirect, render_template, url_for, request, Response, 
 
 app = Flask(__name__)
 app.secret_key = "sadSJdsZMxcMC123231"
-session['test'] = 0
 
 @app.route('/')
 def home():
@@ -10,6 +9,8 @@ def home():
 
 @app.route('/test')
 def test():
+    if session['test'] == None:
+        session['test'] = 'None'
     return render_template('test.html', empty_area=session['test'])
 
 @app.route('/data/update/<uuid>', methods=['POST'])
