@@ -26,9 +26,7 @@ def getClientData(uuid):
     else:
         return jsonify(success=False)
 
-def create_app(config_filename):
-    app = Flask(__name__)
-    app.secret_key = "sadSJdsZMxcMC123231"
+def create_app():
     return app
 
 if __name__ == '__main__':
