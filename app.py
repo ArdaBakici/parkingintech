@@ -9,20 +9,27 @@ def home():
 
 @app.route('/test')
 def test():
-    if session['test'] == None:
-        session['test'] = 'None'
-    return render_template('test.html', empty_area=session['test'])
+    if not session.get('empty-area'):
+        session['empty-area'] = 'none'
+    return render_template('test.html', empty_area=session['empty-area'])
 
 @app.route('/data/update/<uuid>', methods=['POST'])
 def getClientData(uuid):
     data = request.json
     sended_dev_key = data['dev_key']
     print(f"dev_key is : {sended_dev_key}")
+    session['empty-area'] = data['empty_slots']
     if sended_dev_key == 'xssdQsdxcgtRS':
-        session['test'] = data['empty_slots']
+        print('success')
+        print(f"Sucsess : {session['empty-area']}")
         return jsonify(success=True)
     else:
         return jsonify(success=False)
+
+def create_app(config_filename):
+    app = Flask(__name__)
+    app.secret_key = "sadSJdsZMxcMC123231"
+    return app
 
 if __name__ == '__main__':
     app.run(debug=True)
