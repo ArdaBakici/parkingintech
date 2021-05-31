@@ -81,11 +81,17 @@ def getParkingLotEmptySlotNum(lot_name):
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    empty_lot = getParkingLotEmptySlotArr("MainLot")
+    lot = Parking_lot.query.filter_by(name="MainLot").first()
+    return render_template('home.html', empty_area= empty_lot, empty_area_len= len(empty_lot), slot_num=lot.slotAmount, col_num= 6)
 
-@app.route('/test')
-def test():
-    return render_template('test.html', empty_area=getParkingLotEmptySlotNum("MainLot"))
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/who')
+def whois():
+    return render_template('whois.html')
 
 @app.route('/data/update/<dev_id>', methods=['POST'])
 def getClientData(dev_id):

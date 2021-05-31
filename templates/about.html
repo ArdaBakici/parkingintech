@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{{url_for('static', filename='about.css')}}">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-3 ">
+  <div class="row">
+   <b> <h3 class="ms-4">Parking in Tech Nedir?</h3></b> 
+   <p class="paragraf_basi yasla"> 
+    Dünyada ve ülkemizde nüfus artışı ile birlikte trafikte araç sayısının artması, otopark ve araç trafiği problemlerini
+    ortaya çıkarmıştır.  Metropol ve büyük şehirler otopark planlamasına bağlı sorunların en yoğun olduğu yerlerdir.
+    Otopark problemi insanların hem yer ararken vakit kaybetmesine hem de maddi kayıplara sebep olmaktadır. 
+    Parking in Tech, özellikle büyük şehirlerde yaşayan innsanların günlük hayatta karşılaştığı bu soruna pratik ve 
+    yüksek verimli çözüm bulmayı amaçlayan bir websitesidir. Tamamen ücretsiz olan Parking in Tech, kullanıcılarına 
+    bulundukları şehirdeki otoparkların çevresindeki şehir trafiğini görme imkanı sağlayarak  zaman kaybını en aza 
+    indirmeyi amaçlamaktadır.
+    </p>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{{url_for('static', filename='about.css')}}">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-3 ">
+  <div class="row">
+   <b> <h3 class="ms-4">Biz Kimiz?</h3></b> 
+   <p class="paragraf_basi yasla"> 
+      Bizler İzmir Bahçeşehir Fen ve Teknoloji Lisesi öğrencileri tarafından kurulan 3 kişilik bir takımız. 
+      Temel amacımız büyük şehirlerdeki insanların otopark içi ve çevresindeki yaşadıkları trafik sorununu en
+      aza indirmektir. 2021 TÜBİTAK Lise Öğrencileri Araştırma Projeleri Yarışmasında “Büyük Şehirlerdeki Otopark
+      ve Trafik Sorununu Azaltmaya Yönelik Alternatif Çözüm: HGS-OGS Tabanlı Akıllı Otopark Sistemi” ile bölge
+      sergisine kabul aldık ve daha sonrasında projemizi geliştirerek Parking in Tech’i kurmaya karar verdik. 
+      Bu zamana kadar FRC, TÜBİTAK gibi yarışmalara katılan takımımız şimdi ise TEKNOFEST 2021 Lise Akıllı Ulaşım
+      Yarışmasına hazırlanmaktadır.
+    </p>
+  </div>
+</div>
+
+{% endblock %}

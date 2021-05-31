@@ -1,17 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parking In Tech</title>
-</head>
-<body alink="black" background="{{ url_for('static', filename='Tr.jpg') }}">
-    <h1>
-        Sitemiz Yapım Aşamasındadır
-    </h1>
-    <h1>
-        Anlayışınız İçin Teşekkürler
-    </h1>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block head %}
+
+<style type="text/css">
+    table{
+        border: 2px solid #4aa96c;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
+    td, tr{
+        border: 1px solid #222222;
+    }
+
+    td{
+        width: 3em;
+        height: 3em;
+        margin: 0;
+    }
+
+    .empty{
+        text-align: center;
+        background-color: green;
+    }
+
+    .full{
+        text-align: center;
+        background-color: red;
+    }
+
+    .pintable{
+        color: white;
+        font-size: 1.5em;
+        margin: 0;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<h1>Amount of empty slots in lot : {{ empty_area_len }}</h1>
+    <table class="mx-auto">
+        {% for i in range(-(-slot_num//col_num)) %}
+            <tr>
+                {% if ((i+1) == (-(-slot_num//col_num))) and ((slot_num % col_num) != 0) %}
+                    {% set upper_bound = ((i*col_num) + (slot_num % col_num)) + 1 %}
+                {% else %}
+                    {% set upper_bound = ((i+1)*col_num)+1 %}
+                {% endif %}
+                {% for a in range((i*col_num)+1, upper_bound) %}
+                    {% if a in empty_area %}
+                        <td class="empty"> <p class="pintable">{{a}}</p> </td>
+                    {% else %}
+                        <td class="full"><p class="pintable">{{a}}</p> </td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
