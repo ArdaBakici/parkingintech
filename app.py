@@ -1,11 +1,24 @@
 from flask import Flask, redirect, render_template, url_for, request, Response, after_this_request, session, Blueprint, jsonify
+import flask_talisman
 from flask_talisman import Talisman
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date, datetime
 import json
 
 app = Flask(__name__)
-Talisman(app)
+    
+csp = {
+    'default-src': [
+        '\'self\'',
+        '\'unsafe-inline\'',
+        'stackpath.bootstrapcdn.com',
+        'code.jquery.com',
+        'cdn.jsdelivr.net',
+        '*.gstatic.com',
+        '*.googleapis.com'
+    ]
+}
+talisman = Talisman(app, content_security_policy=csp)
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
