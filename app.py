@@ -1,9 +1,11 @@
 from flask import Flask, redirect, render_template, url_for, request, Response, after_this_request, session, Blueprint, jsonify
+from flask_talisman import Talisman
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date, datetime
 import json
 
 app = Flask(__name__)
+Talisman(app)
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
