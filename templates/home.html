@@ -32,31 +32,51 @@
         font-size: 1.5em;
         margin: 0;
     }
-
 </style>
 
+<script src="https://js.api.here.com/v3/3.1.25.0/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://js.api.here.com/v3/3.1.25.0/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
+
+<script type=text/javascript src="{{url_for('static', filename='js/home.js')}}"></script>
+
+<script type=text/javascript>
+    LIST_OF_LOTS = {{list_of_lots}}
+    LIST_OF_PARKS = {{list_of_parks}}
+    RECOMENDED_LOT = {{recomended_lot}}
+    EMPTY_AREA_NUM = {{empty_area_len}};
+</script>
+  
 {% endblock %}
 
 {% block content %}
-
-<h1>Amount of empty slots in lot : {{ empty_area_len }}</h1>
-    <table class="mx-auto">
-        {% for i in range(-(-slot_num//col_num)) %}
-            <tr>
-                {% if ((i+1) == (-(-slot_num//col_num))) and ((slot_num % col_num) != 0) %}
-                    {% set upper_bound = ((i*col_num) + (slot_num % col_num)) + 1 %}
-                {% else %}
-                    {% set upper_bound = ((i+1)*col_num)+1 %}
-                {% endif %}
-                {% for a in range((i*col_num)+1, upper_bound) %}
-                    {% if a in empty_area %}
-                        <td class="empty"> <p class="pintable">{{a}}</p> </td>
+<div class="row my-3">
+    {% if empty_area_len < 1 %}
+        <h1>Otoparkımızda boş yer bulunmamaktadır. Sizi civardaki en az trafiğe sahip otoparka yönlendireceğiz.</h1>
+    {% else %}
+        <h1>Otoparkımızda {{ empty_area_len }} boş yer bulunmaktadır.</h1>
+        <table class="mx-auto">
+            {% for i in range(-(-slot_num//col_num)) %}
+                <tr>
+                    {% if ((i+1) == (-(-slot_num//col_num))) and ((slot_num % col_num) != 0) %}
+                        {% set upper_bound = ((i*col_num) + (slot_num % col_num)) + 1 %}
                     {% else %}
-                        <td class="full"><p class="pintable">{{a}}</p> </td>
+                        {% set upper_bound = ((i+1)*col_num)+1 %}
                     {% endif %}
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
+                    {% for a in range((i*col_num)+1, upper_bound) %}
+                        {% if a in empty_area %}
+                            <td class="empty"> <p class="pintable">{{a}}</p> </td>
+                        {% else %}
+                            <td class="full"><p class="pintable">{{a}}</p> </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</div>
+
+<div style="width: 640px; height: 480px" id="mapContainer" class="mx-auto">
+</div>
 
 {% endblock %}

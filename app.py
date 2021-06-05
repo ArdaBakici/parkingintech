@@ -2,8 +2,12 @@ from flask import Flask, redirect, render_template, url_for, request, Response, 
 import flask_talisman
 from flask_talisman import Talisman
 from flask_sqlalchemy import SQLAlchemy
-from datetime import date, datetime
+from datetime import date, datetime, time
 import json
+import requests
+
+TRAFFIC_RADIUS = 300 # diameter of circle that will be used to check traffic amount around a car park
+TRAFFIC_DATA_REFRESH_TIME = 60
 
 app = Flask(__name__)
     
@@ -15,10 +19,11 @@ csp = {
         'code.jquery.com',
         'cdn.jsdelivr.net',
         '*.gstatic.com',
-        '*.googleapis.com'
+        '*.googleapis.com',
+        '*.api.here.com'
     ]
 }
-talisman = Talisman(app, content_security_policy=csp)
+#talisman = Talisman(app, content_security_policy=csp)
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -52,6 +57,16 @@ class Parking_lot(db.Model):
         emptySlotArr = json.loads(self.emptySlots)
         return f"Parking Lot(id : {self.id} | Name : {self.name} | Location : {self.location_x}, {self.location_y} | Slot amount : {self.slotAmount} | Empty Slot Amount {len(emptySlotArr)} | Empty Slots : {emptySlotArr} | Last Update : {self.lastUpdate} | Updater : {self.lastUpdater})"
 
+class Car_park(db.Model):
+    # Difference between this and Parking_lot this one does not support empty slot reading and just and not smart
+    id = db.Column(db.Integer, primary_key=True)
+    location_x = db.Column(db.Float, nullable=False)
+    location_y = db.Column(db.Float, nullable=False)
+    jam_factor = db.Column(db.Float, nullable=False)
+    lastUpdate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    def __repr__(self):
+        return f"Car Park(id : {self.id} | Location : {self.location_x}, {self.location_y}) | Jam Factor : {self.jam_factor} | Last Update {self.lastUpdate}"
+
 def create_Developer(_name, _password):
     dev = Developer(name=_name, password=_password)
     db.session.add(dev)
@@ -66,6 +81,14 @@ def create_Lot(_name, _location, _slotAmount, _emptySlots, _developer):
     db.session.commit()
     return parking_lot_a
 
+def create_Park(_location):
+    loc_x, loc_y = _location
+    park_a = Car_park(location_x=loc_x, location_y=loc_y, jam_factor=calculateJamFactor((loc_x, loc_y, TRAFFIC_RADIUS)))
+    db.session.add(park_a)
+    db.session.commit()
+
+    return park_a
+# TODO dont show parking lots if no space is avaible also make some indent then send it to github and FINISH
 def update_Empty_Slot(parking_lot_id, _dev, _emptySlots):
     parking_lot = Parking_lot.query.filter_by(id=parking_lot_id).first()
     if parking_lot is None:
@@ -94,11 +117,65 @@ def getParkingLotEmptySlotArr(lot_name):
 def getParkingLotEmptySlotNum(lot_name):
     return len(getParkingLotEmptySlotArr(lot_name))
 
+def updateParkJamFactor(park, jam_factor):
+    park.jam_factor = jam_factor
+    park.lastUpdate = datetime.utcnow()
+    db.session.commit()
+
+def calculateJamFactor(location):
+    base_url = "https://traffic.ls.hereapi.com"
+    url_path = "/traffic/6.2/"
+    resource = "flow"
+    data_type = ".json"
+    #latitude, longitude, diameter
+    location = f"?prox={location[0]},{location[1]},{location[2]}"
+    api_key = "&apiKey=QxBLZ4IQQoRph5Y3sdxUUQyAjcR8Up4NQVto3nPZGJw"
+    get_url =  base_url + url_path + resource + data_type + location + api_key
+    res = requests.get(get_url)
+    res_json = res.json()
+    # each dictionary is inside a list
+    lot_jam_factor = 0
+    jam_factor_amount = 0
+    base_json = res_json['RWS'][0]['RW']
+    for flow_datas in base_json:
+        fi_data = flow_datas['FIS'][0]['FI']
+        for current_flow in fi_data:
+            jam_factor = current_flow['CF'][0]['JF']
+            if jam_factor == -1.0:
+                jam_factor = 0
+            lot_jam_factor += jam_factor
+            jam_factor_amount += 1
+    return lot_jam_factor/jam_factor_amount
+
+def getRecomendedLot():
+    availableLots = [f for f in Parking_lot.query.all() if getParkingLotEmptySlotNum(f.name) > 0]
+    if len(availableLots) > 0:
+        return availableLots[0] # TODO make this one elected by the position of the client or traffic
+    else:
+        least_traffic_park = {"park": None, "jam": 20}
+        for park in Car_park.query.all():
+            jam_factor = None
+            deltaTime = datetime.utcnow() - park.lastUpdate
+            if deltaTime.total_seconds() > TRAFFIC_DATA_REFRESH_TIME:
+                jam_factor = calculateJamFactor((park.location_x, park.location_y, TRAFFIC_RADIUS))
+            else:
+                jam_factor = park.jam_factor
+            if jam_factor < least_traffic_park["jam"]:
+                least_traffic_park["jam"] = jam_factor
+                least_traffic_park["park"] = park
+            updateParkJamFactor(park, jam_factor)
+        return least_traffic_park["park"]
+
 @app.route('/')
 def home():
-    empty_lot = getParkingLotEmptySlotArr("MainLot")
+    empty_lot = getParkingLotEmptySlotArr("MainLot") # TODO decide this by region
     lot = Parking_lot.query.filter_by(name="MainLot").first()
-    return render_template('home.html', empty_area= empty_lot, empty_area_len= len(empty_lot), slot_num=lot.slotAmount, col_num= 6)
+    lot_list = [[f.location_x, f.location_y] for f in Parking_lot.query.all()]
+    park_list = [[f.location_x, f.location_y] for f in Car_park.query.all()]
+    recomendedLot = getRecomendedLot()
+    recLotLoc = [recomendedLot.location_x, recomendedLot.location_y]
+    return render_template('home.html', empty_area= empty_lot, empty_area_len= len(empty_lot), slot_num=lot.slotAmount, col_num= 6,
+    list_of_lots= lot_list,list_of_parks= park_list,recomended_lot= recLotLoc)
 
 @app.route('/about')
 def about():
@@ -112,7 +189,6 @@ def whois():
 def getClientData(dev_id):
     data = request.json
     sended_password = data['dev_key']
-    print(f"dev_key is : {sended_password}")
     dev = Developer.query.filter_by(id=dev_id).first()
     if (dev is None) or (not dev.password == sended_password):
         return jsonify("Invalid Credentials")
