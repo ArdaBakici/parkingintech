@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-3">
+  <div class="row">
+    <b><h3 class="ms-3">İletişim Formu</h3></b> 
+    <p>Herhangi bir soru veya önerileriniz için bizlere aşağıdaki iletişim formundan ulaşabilirsiniz.</p>  
+    <form action="contact/success" method="post" enctype="multipart/form-data">
+      <b>İsim Soyisim </b> <br>
+      <input type="text" size="40" id="name" name="name" required/> <br> <br>
+      <b>E-mail Adresiniz</b> <br> 
+      <input type="email" placeholder="örnek: info@parking-in.tech" id="email" name="email" size="40" required/> <br> <br>
+      <b>Telefon Numarası</b> <br>
+      <input type="tel" placeholder="(___)(_______)" size="40" id="phone" name="phone" required/> <br> <br>
+      <b>Mesajınız</b> <br>
+      <textarea rows="7" style="width: 100%" id="message" name="message" required></textarea> <br> <br>
+      <input type="submit" class="btn btn-primary" value="Gönder">
+      <input type="reset" class="btn btn-primary" value="Sıfırla">
+    </form>
+  </div>
+</div>
+
+{% endblock %}

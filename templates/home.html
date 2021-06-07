@@ -76,7 +76,11 @@
     {% endif %}
 </div>
 
-<div style="width: 640px; height: 480px" id="mapContainer" class="mx-auto">
+<div class="row">
+    <div style="width: 640px; height: 480px" id="mapContainer" class="mx-auto"></div>
+    <div class="col-lg-3">
+        <img class="img-fluid" src="{{ url_for('static', filename='explanation.jpeg') }}" alt="explanation">
+    </div>
 </div>
 
 {% endblock %}

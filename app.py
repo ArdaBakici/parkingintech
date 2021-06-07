@@ -5,6 +5,9 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import date, datetime, time
 import json
 import requests
+import smtplib, ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 TRAFFIC_RADIUS = 300 # diameter of circle that will be used to check traffic amount around a car park
 TRAFFIC_DATA_REFRESH_TIME = 60
@@ -27,6 +30,7 @@ csp = {
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+port = 587
 
 db = SQLAlchemy(app)
 
@@ -45,7 +49,7 @@ class Developer(db.Model):
 
 class Parking_lot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
     location_x = db.Column(db.Float, nullable=False)
     location_y = db.Column(db.Float, nullable=False)
     slotAmount = db.Column(db.Integer, nullable=False)
@@ -60,12 +64,13 @@ class Parking_lot(db.Model):
 class Car_park(db.Model):
     # Difference between this and Parking_lot this one does not support empty slot reading and just and not smart
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
     location_x = db.Column(db.Float, nullable=False)
     location_y = db.Column(db.Float, nullable=False)
     jam_factor = db.Column(db.Float, nullable=False)
     lastUpdate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     def __repr__(self):
-        return f"Car Park(id : {self.id} | Location : {self.location_x}, {self.location_y}) | Jam Factor : {self.jam_factor} | Last Update {self.lastUpdate}"
+        return f"Car Park(id : {self.id} | Name : {self.name} | Location : {self.location_x}, {self.location_y}) | Jam Factor : {self.jam_factor} | Last Update {self.lastUpdate}"
 
 def create_Developer(_name, _password):
     dev = Developer(name=_name, password=_password)
@@ -81,9 +86,9 @@ def create_Lot(_name, _location, _slotAmount, _emptySlots, _developer):
     db.session.commit()
     return parking_lot_a
 
-def create_Park(_location):
+def create_Park(_name, _location):
     loc_x, loc_y = _location
-    park_a = Car_park(location_x=loc_x, location_y=loc_y, jam_factor=calculateJamFactor((loc_x, loc_y, TRAFFIC_RADIUS)))
+    park_a = Car_park(name=_name, location_x=loc_x, location_y=loc_y, jam_factor=calculateJamFactor((loc_x, loc_y, TRAFFIC_RADIUS)))
     db.session.add(park_a)
     db.session.commit()
 
@@ -166,6 +171,14 @@ def getRecomendedLot():
             updateParkJamFactor(park, jam_factor)
         return least_traffic_park["park"]
 
+def send_email(message):
+    _context = ssl.create_default_context()
+    with smtplib.SMTP("us2.smtp.mailhostbox.com", port) as server:
+        
+        server.starttls(context=_context)
+        server.login("info@parking-in.tech", "CElqRZc2")
+        server.sendmail("info@parking-in.tech", "info@parking-in.tech", message)
+
 @app.route('/')
 def home():
     empty_lot = getParkingLotEmptySlotArr("MainLot") # TODO decide this by region
@@ -184,6 +197,41 @@ def about():
 @app.route('/who')
 def whois():
     return render_template('whois.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+@app.route('/contact/success', methods=['POST'])
+def contact_success():
+    print('Trying to send email')
+    try:
+        name = request.form.get('name' , None)
+        email = request.form.get('email' , None)
+        phone = request.form.get('phone' , None)
+        user_message = request.form.get('message' , None)
+        message = MIMEMultipart("alternative")
+        message["Subject"] = f"{name} Kullanıcısından İletişim Formu"
+        message["From"] = "info@parking-in.tech"
+        message["To"] = "info@parking-in.tech"
+        
+        html = f"""\
+                <html>
+                <body>
+                    <p><b>İsim Soyisim :</b> {name}</p><br>
+                    <p><b>Email :</b> {email}</p><br>
+                    <p><b>Telefon :</b> {phone}</p><br>
+                    <p><b>Kullanıcı Mesajı :</b> <br>{user_message}</p>
+                </body>
+                </html>
+                """
+        message.attach(MIMEText(html, "html"))
+        print('Still trying to send email')
+        send_email(message.as_string())
+        print('Sended email')
+        return render_template('contact_success.html')
+    except:
+        return render_template('contact_fail.html')
 
 @app.route('/data/update/<dev_id>', methods=['POST'])
 def getClientData(dev_id):
