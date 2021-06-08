@@ -172,7 +172,7 @@ def getRecomendedLot():
         return least_traffic_park["park"]
 
 def send_email(message):
-    with smtplib.SMTP("smtp.mailhostbox.com", port) as server:
+    with smtplib.SMTP("smtp.parking-in.tech", port) as server:
         server.login("info@parking-in.tech", "CElqRZc2")
         server.sendmail("info@parking-in.tech", "info@parking-in.tech", message)
 
