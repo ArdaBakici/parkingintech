@@ -205,33 +205,34 @@ def contact():
 @app.route('/contact/success', methods=['POST'])
 def contact_success():
     print('Trying to send email')
-    try:
-        name = request.form.get('name' , None)
-        email = request.form.get('email' , None)
-        phone = request.form.get('phone' , None)
-        user_message = request.form.get('message' , None)
-        message = MIMEMultipart("alternative")
-        message["Subject"] = f"{name} Kullanıcısından İletişim Formu"
-        message["From"] = "info@parking-in.tech"
-        message["To"] = "info@parking-in.tech"
-        
-        html = f"""\
-                <html>
-                <body>
-                    <p><b>İsim Soyisim :</b> {name}</p><br>
-                    <p><b>Email :</b> {email}</p><br>
-                    <p><b>Telefon :</b> {phone}</p><br>
-                    <p><b>Kullanıcı Mesajı :</b> <br>{user_message}</p>
-                </body>
-                </html>
-                """
-        message.attach(MIMEText(html, "html"))
-        print('Still trying to send email')
-        send_email(message.as_string())
-        print('Sended email')
-        return render_template('contact_success.html')
-    except:
-        return render_template('contact_fail.html')
+    name = request.form.get('name' , None)
+    email = request.form.get('email' , None)
+    phone = request.form.get('phone' , None)
+    user_message = request.form.get('message' , None)
+    message = MIMEMultipart("alternative")
+    message["Subject"] = f"{name} Kullanıcısından İletişim Formu"
+    message["From"] = "info@parking-in.tech"
+    message["To"] = "info@parking-in.tech"
+    
+    html = f"""\
+            <html>
+            <body>
+                <p><b>İsim Soyisim :</b> {name}</p><br>
+                <p><b>Email :</b> {email}</p><br>
+                <p><b>Telefon :</b> {phone}</p><br>
+                <p><b>Kullanıcı Mesajı :</b> <br>{user_message}</p>
+            </body>
+            </html>
+            """
+    message.attach(MIMEText(html, "html"))
+    print('Still trying to send email')
+    send_email(message.as_string())
+    print('Sended email')
+    return render_template('contact_success.html')
+    
+@app.route('/contact/fail')
+def contact_fail():
+    return render_template('contact_fail.html')
 
 @app.route('/data/update/<dev_id>', methods=['POST'])
 def getClientData(dev_id):
