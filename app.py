@@ -30,7 +30,7 @@ csp = {
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-port = 587
+port = 25
 
 db = SQLAlchemy(app)
 
@@ -180,8 +180,9 @@ def send_email(message):
     print(ssl.HAS_TLSv1_2)
     print(ssl.HAS_TLSv1_3)
     print('Testaaa')
-    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    with smtplib.SMTP_SSL("us2.smtp.mailhostbox.com", port, context=context) as server:
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    with smtplib.SMTP("us2.smtp.mailhostbox.com", port) as server:
+        server.starttls(context=context)
         server.login("info@parking-in.tech", "CElqRZc2")
         server.sendmail("info@parking-in.tech", "info@parking-in.tech", message)
 
