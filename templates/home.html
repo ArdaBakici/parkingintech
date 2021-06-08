@@ -3,6 +3,17 @@
 {% block head %}
 
 <style type="text/css">
+    .H_ib_body{
+        width: 15rem !important;
+        height: fit-content !important;
+        background: transparent;
+    }
+
+    .exp{
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 1.5rem
+    }
+
     table{
         border: 2px solid #4aa96c;
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -37,25 +48,32 @@
 <script src="https://js.api.here.com/v3/3.1.25.0/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
 <script src="https://js.api.here.com/v3/3.1.25.0/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
 <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" type="text/javascript" charset="utf-8"></script>
+
+<link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
 
 <script type=text/javascript src="{{url_for('static', filename='js/home.js')}}"></script>
 
 <script type=text/javascript>
-    LIST_OF_LOTS = {{list_of_lots}}
-    LIST_OF_PARKS = {{list_of_parks}}
-    RECOMENDED_LOT = {{recomended_lot}}
-    EMPTY_AREA_NUM = {{empty_area_len}};
+    LIST_OF_LOTS = {{list_of_lots|safe }}
+    LIST_OF_PARKS = {{list_of_parks|safe }}
+    RECOMENDED_LOT = {{recomended_lot|safe }}
+    EMPTY_AREA_NUM = {{empty_area_len|safe }};
 </script>
   
 {% endblock %}
 
 {% block content %}
-<div class="my-3">
-    {% if empty_area_len < 1 %}
-        <h1>Otoparkımızda boş yer bulunmamaktadır. Sizi civardaki en az trafiğe sahip otoparka yönlendireceğiz.</h1>
-    {% else %}
-        <h1>Otoparkımızda {{ empty_area_len }} boş yer bulunmaktadır.</h1>
-        <table class="mx-auto">
+{% if empty_area_len < 1 %}
+    <div class="row my-3 mx-auto">
+        <h2 class="exp">Otoparkımızda boş yer bulunmamaktadır. Sizi civardaki en az trafiğe sahip otoparka yönlendireceğiz.</h2>
+    </div>
+{% else %}
+    <div class="row my-3 mx-auto">
+        <h2 class="exp">Otoparkımızda {{ empty_area_len }} boş yer bulunmaktadır.</h2>
+    </div>
+    <div class="mx-auto my-3">
+        <table>
             {% for i in range(-(-slot_num//col_num)) %}
                 <tr>
                     {% if ((i+1) == (-(-slot_num//col_num))) and ((slot_num % col_num) != 0) %}
@@ -73,14 +91,13 @@
                 </tr>
             {% endfor %}
         </table>
-    {% endif %}
-</div>
-
-<div class="row">
-    <div style="width: 640px; height: 480px" id="mapContainer" class="mx-auto"></div>
-    <div class="col-lg-3">
-        <img class="img-fluid" src="{{ url_for('static', filename='explanation.jpeg') }}" alt="explanation">
     </div>
-</div>
-
+{% endif %}
+    <div class="container-flex mx-2">
+        <div style="height: 68vh;" id="mapContainer"></div>
+    </div>
+    
+    <div class="container-flex mx-2 text-center">
+        <img class="img-fluid" src="{{ url_for('static', filename='explanation_wide.jpeg') }}" alt="explanation">
+    </div>
 {% endblock %}

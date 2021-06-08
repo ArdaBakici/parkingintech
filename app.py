@@ -50,6 +50,7 @@ class Developer(db.Model):
 class Parking_lot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
+    address = db.Column(db.Text, nullable=False)
     location_x = db.Column(db.Float, nullable=False)
     location_y = db.Column(db.Float, nullable=False)
     slotAmount = db.Column(db.Integer, nullable=False)
@@ -59,18 +60,19 @@ class Parking_lot(db.Model):
 
     def __repr__(self):
         emptySlotArr = json.loads(self.emptySlots)
-        return f"Parking Lot(id : {self.id} | Name : {self.name} | Location : {self.location_x}, {self.location_y} | Slot amount : {self.slotAmount} | Empty Slot Amount {len(emptySlotArr)} | Empty Slots : {emptySlotArr} | Last Update : {self.lastUpdate} | Updater : {self.lastUpdater})"
+        return f"Parking Lot(id : {self.id} | Name : {self.name} | Address : {self.address} | Location : {self.location_x}, {self.location_y} | Slot amount : {self.slotAmount} | Empty Slot Amount {len(emptySlotArr)} | Empty Slots : {emptySlotArr} | Last Update : {self.lastUpdate} | Updater : {self.lastUpdater})"
 
 class Car_park(db.Model):
     # Difference between this and Parking_lot this one does not support empty slot reading and just and not smart
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
+    address = db.Column(db.Text, nullable=False)
     location_x = db.Column(db.Float, nullable=False)
     location_y = db.Column(db.Float, nullable=False)
     jam_factor = db.Column(db.Float, nullable=False)
     lastUpdate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     def __repr__(self):
-        return f"Car Park(id : {self.id} | Name : {self.name} | Location : {self.location_x}, {self.location_y}) | Jam Factor : {self.jam_factor} | Last Update {self.lastUpdate}"
+        return f"Car Park(id : {self.id} | Name : {self.name} | Address : {self.address} | Location : {self.location_x}, {self.location_y}) | Jam Factor : {self.jam_factor} | Last Update {self.lastUpdate}"
 
 def create_Developer(_name, _password):
     dev = Developer(name=_name, password=_password)
@@ -78,17 +80,17 @@ def create_Developer(_name, _password):
     db.session.commit()
     return dev
 
-def create_Lot(_name, _location, _slotAmount, _emptySlots, _developer):
+def create_Lot(_name, _address, _location, _slotAmount, _emptySlots, _developer):
     x_loc, y_loc = _location
     _emptySlots = json.dumps(_emptySlots)
-    parking_lot_a = Parking_lot(name= _name, location_x= x_loc, location_y= y_loc, slotAmount=_slotAmount, emptySlots=_emptySlots, lastUpdater=_developer.id)
+    parking_lot_a = Parking_lot(name= _name, address= _address, location_x= x_loc, location_y= y_loc, slotAmount=_slotAmount, emptySlots=_emptySlots, lastUpdater=_developer.id)
     db.session.add(parking_lot_a)
     db.session.commit()
     return parking_lot_a
 
-def create_Park(_name, _location):
+def create_Park(_name, _address, _location):
     loc_x, loc_y = _location
-    park_a = Car_park(name=_name, location_x=loc_x, location_y=loc_y, jam_factor=calculateJamFactor((loc_x, loc_y, TRAFFIC_RADIUS)))
+    park_a = Car_park(name=_name, address= _address, location_x=loc_x, location_y=loc_y, jam_factor=calculateJamFactor((loc_x, loc_y, TRAFFIC_RADIUS)))
     db.session.add(park_a)
     db.session.commit()
 
@@ -112,14 +114,14 @@ def update_Empty_Slot(parking_lot, _dev, _emptySlots):
     db.session.commit()
     return "Successfully Updated"
 
-def getParkingLotEmptySlotArr(lot_name):
-    lot = Parking_lot.query.filter_by(name=lot_name).first()
+def getParkingLotEmptySlotArr(lot_id):
+    lot = Parking_lot.query.filter_by(id=lot_id).first()
     if lot is None:
-        Exception("Wrong lot name")
+        Exception("Wrong lot id")
     return json.loads(lot.emptySlots)
 
-def getParkingLotEmptySlotNum(lot_name):
-    return len(getParkingLotEmptySlotArr(lot_name))
+def getParkingLotEmptySlotNum(lot_id):
+    return len(getParkingLotEmptySlotArr(lot_id))
 
 def updateParkJamFactor(park, jam_factor):
     park.jam_factor = jam_factor
@@ -152,7 +154,7 @@ def calculateJamFactor(location):
     return lot_jam_factor/jam_factor_amount
 
 def getRecomendedLot():
-    availableLots = [f for f in Parking_lot.query.all() if getParkingLotEmptySlotNum(f.name) > 0]
+    availableLots = [f for f in Parking_lot.query.all() if getParkingLotEmptySlotNum(f.id) > 0]
     if len(availableLots) > 0:
         return availableLots[0] # TODO make this one elected by the position of the client or traffic
     else:
@@ -173,17 +175,16 @@ def getRecomendedLot():
 def send_email(message):
     #us2.smtp.mailhostbox.com
     #smtp.parking-in.tech
-    ssl_context.minimum_version = ssl.TLSVersion.TLSv1
     with smtplib.SMTP("smtp.parking-in.tech", port) as server:
         server.login("info@parking-in.tech", "CElqRZc2")
         server.sendmail("info@parking-in.tech", "info@parking-in.tech", message)
 
 @app.route('/')
 def home():
-    empty_lot = getParkingLotEmptySlotArr("MainLot") # TODO decide this by region
-    lot = Parking_lot.query.filter_by(name="MainLot").first()
-    lot_list = [[f.location_x, f.location_y] for f in Parking_lot.query.all()]
-    park_list = [[f.location_x, f.location_y] for f in Car_park.query.all()]
+    lot = Parking_lot.query.first()
+    empty_lot = getParkingLotEmptySlotArr(lot.id) # TODO decide this by region
+    lot_list = [[f.name, f.address, f.location_x, f.location_y] for f in Parking_lot.query.all()]
+    park_list = [[f.name, f.address, f.location_x, f.location_y] for f in Car_park.query.all()]
     recomendedLot = getRecomendedLot()
     recLotLoc = [recomendedLot.location_x, recomendedLot.location_y]
     return render_template('home.html', empty_area= empty_lot, empty_area_len= len(empty_lot), slot_num=lot.slotAmount, col_num= 6,
