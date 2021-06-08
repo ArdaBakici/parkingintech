@@ -173,7 +173,8 @@ def getRecomendedLot():
 
 def send_email(message):
     print(ssl.OPENSSL_VERSION)
-    context = ssl.SSLContext(ssl.PROTOCOL_SSLv3)
+    print(ssl.HAS_TLSv1)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
     with smtplib.SMTP("us2.smtp.mailhostbox.com", port) as server:
         server.starttls(context=context)
         server.login("info@parking-in.tech", "CElqRZc2")
