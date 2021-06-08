@@ -179,6 +179,7 @@ def send_email(message):
     print(ssl.HAS_TLSv1_1)
     print(ssl.HAS_TLSv1_2)
     print(ssl.HAS_TLSv1_3)
+    print('Test')
     context = ssl.SSLContext(ssl.PROTOCOL)
     with smtplib.SMTP("us2.smtp.mailhostbox.com", port) as server:
         server.starttls(context=context)
