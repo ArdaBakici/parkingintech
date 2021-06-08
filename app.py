@@ -30,7 +30,7 @@ csp = {
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-port = 25
+port = 587
 
 db = SQLAlchemy(app)
 
@@ -171,9 +171,21 @@ def getRecomendedLot():
         return least_traffic_park["park"]
 
 def send_email(message):
-    with smtplib.SMTP("smtp.parking-in.tech", port) as server:
+    ssl_context = ssl.create_default_context()
+    # Sets up old and insecure TLSv1.
+    ssl_context.options &= (
+        ~getattr(ssl, "OP_NO_TLSv1_3", 0)
+        & ~ssl.OP_NO_TLSv1_2
+        & ~ssl.OP_NO_TLSv1_1
+    )
+    #us2.smtp.mailhostbox.com
+    #smtp.parking-in.tech
+    ssl_context.minimum_version = ssl.TLSVersion.TLSv1
+    with smtplib.SMTP("us2.smtp.mailhostbox.com", port) as server:
+        server.starttls(context=ssl_context)
         server.login("info@parking-in.tech", "CElqRZc2")
-        server.sendmail("info@parking-in.tech", "info@parking-in.tech", message)
+        print('ok')
+        #server.sendmail("info@parking-in.tech", "info@parking-in.tech", message)
 
 @app.route('/')
 def home():
@@ -200,7 +212,7 @@ def contact():
 
 @app.route('/contact/success', methods=['POST'])
 def contact_success():
-    try:
+    #try:
         name = request.form.get('name' , None)
         email = request.form.get('email' , None)
         phone = request.form.get('phone' , None)
@@ -223,8 +235,8 @@ def contact_success():
         message.attach(MIMEText(html, "html"))
         send_email(message.as_string())
         return render_template('contact_success.html')
-    except:
-        return redirect(url_for('contact_fail'))
+    #except:
+    #    return redirect(url_for('contact_fail'))
     
 @app.route('/contact/fail')
 def contact_fail():
