@@ -30,7 +30,7 @@ csp = {
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-port = 25
+port = 587
 
 db = SQLAlchemy(app)
 
@@ -93,7 +93,7 @@ def create_Park(_name, _location):
     db.session.commit()
 
     return park_a
-# TODO dont show parking lots if no space is avaible also make some indent then send it to github and FINISH
+
 def update_Empty_Slot(parking_lot_id, _dev, _emptySlots):
     parking_lot = Parking_lot.query.filter_by(id=parking_lot_id).first()
     if parking_lot is None:
@@ -172,7 +172,11 @@ def getRecomendedLot():
         return least_traffic_park["park"]
 
 def send_email(message):
-    with smtplib.SMTP("smtp.parking-in.tech", port) as server:
+    context = ssl.create_default_context()
+    print(context.protocol)
+    with smtplib.SMTP("us2.smtp.mailhostbox.com", port) as server:
+        reply = server.starttls(context=context)
+        print(repr(reply))
         server.login("info@parking-in.tech", "CElqRZc2")
         server.sendmail("info@parking-in.tech", "info@parking-in.tech", message)
 
@@ -201,31 +205,28 @@ def contact():
 
 @app.route('/contact/success', methods=['POST'])
 def contact_success():
-    try:
-        name = request.form.get('name' , None)
-        email = request.form.get('email' , None)
-        phone = request.form.get('phone' , None)
-        user_message = request.form.get('message' , None)
-        message = MIMEMultipart("alternative")
-        message["Subject"] = f"{name} Kullanıcısından İletişim Formu"
-        message["From"] = "info@parking-in.tech"
-        message["To"] = "info@parking-in.tech"
-        
-        html = f"""\
-                <html>
-                <body>
-                    <p><b>İsim Soyisim :</b> {name}</p><br>
-                    <p><b>Email :</b> {email}</p><br>
-                    <p><b>Telefon :</b> {phone}</p><br>
-                    <p><b>Kullanıcı Mesajı :</b> <br>{user_message}</p>
-                </body>
-                </html>
-                """
-        message.attach(MIMEText(html, "html"))
-        send_email(message.as_string())
-        return render_template('contact_success.html')
-    except:
-        return redirect(url_for('contact_fail'))
+    name = request.form.get('name' , None)
+    email = request.form.get('email' , None)
+    phone = request.form.get('phone' , None)
+    user_message = request.form.get('message' , None)
+    message = MIMEMultipart("alternative")
+    message["Subject"] = f"{name} Kullanıcısından İletişim Formu"
+    message["From"] = "info@parking-in.tech"
+    message["To"] = "info@parking-in.tech"
+    
+    html = f"""\
+            <html>
+            <body>
+                <p><b>İsim Soyisim :</b> {name}</p><br>
+                <p><b>Email :</b> {email}</p><br>
+                <p><b>Telefon :</b> {phone}</p><br>
+                <p><b>Kullanıcı Mesajı :</b> <br>{user_message}</p>
+            </body>
+            </html>
+            """
+    message.attach(MIMEText(html, "html"))
+    send_email(message.as_string())
+    return render_template('contact_success.html')
     
 @app.route('/contact/fail')
 def contact_fail():
