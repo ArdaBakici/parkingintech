@@ -6,6 +6,7 @@ def load():
     db.session.add(dev)
     lot = create_Lot("MainLot", (38.43082385998546, 27.14129463284438), 6, [], dev)
     db.session.add(lot)
+    dev.parks = [lot]
     db.session.commit()
 
 def initiate_park():

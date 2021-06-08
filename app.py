@@ -30,7 +30,7 @@ csp = {
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-port = 587
+port = 25
 
 db = SQLAlchemy(app)
 
@@ -94,8 +94,7 @@ def create_Park(_name, _location):
 
     return park_a
 
-def update_Empty_Slot(parking_lot_id, _dev, _emptySlots):
-    parking_lot = Parking_lot.query.filter_by(id=parking_lot_id).first()
+def update_Empty_Slot(parking_lot, _dev, _emptySlots):
     if parking_lot is None:
         return "Invalid parking lot"
     if parking_lot.developers.filter_by(id= _dev.id).first() is None:
@@ -172,11 +171,7 @@ def getRecomendedLot():
         return least_traffic_park["park"]
 
 def send_email(message):
-    context = ssl.create_default_context()
-    print(context.protocol)
-    with smtplib.SMTP("us2.smtp.mailhostbox.com", port) as server:
-        reply = server.starttls(context=context)
-        print(repr(reply))
+    with smtplib.SMTP("smtp.parking-in.tech", port) as server:
         server.login("info@parking-in.tech", "CElqRZc2")
         server.sendmail("info@parking-in.tech", "info@parking-in.tech", message)
 
@@ -205,28 +200,31 @@ def contact():
 
 @app.route('/contact/success', methods=['POST'])
 def contact_success():
-    name = request.form.get('name' , None)
-    email = request.form.get('email' , None)
-    phone = request.form.get('phone' , None)
-    user_message = request.form.get('message' , None)
-    message = MIMEMultipart("alternative")
-    message["Subject"] = f"{name} Kullanıcısından İletişim Formu"
-    message["From"] = "info@parking-in.tech"
-    message["To"] = "info@parking-in.tech"
-    
-    html = f"""\
-            <html>
-            <body>
-                <p><b>İsim Soyisim :</b> {name}</p><br>
-                <p><b>Email :</b> {email}</p><br>
-                <p><b>Telefon :</b> {phone}</p><br>
-                <p><b>Kullanıcı Mesajı :</b> <br>{user_message}</p>
-            </body>
-            </html>
-            """
-    message.attach(MIMEText(html, "html"))
-    send_email(message.as_string())
-    return render_template('contact_success.html')
+    try:
+        name = request.form.get('name' , None)
+        email = request.form.get('email' , None)
+        phone = request.form.get('phone' , None)
+        user_message = request.form.get('message' , None)
+        message = MIMEMultipart("alternative")
+        message["Subject"] = f"{name} Kullanıcısından İletişim Formu"
+        message["From"] = "info@parking-in.tech"
+        message["To"] = "info@parking-in.tech"
+        
+        html = f"""\
+                <html>
+                <body>
+                    <p><b>İsim Soyisim :</b> {name}</p><br>
+                    <p><b>Email :</b> {email}</p><br>
+                    <p><b>Telefon :</b> {phone}</p><br>
+                    <p><b>Kullanıcı Mesajı :</b> <br>{user_message}</p>
+                </body>
+                </html>
+                """
+        message.attach(MIMEText(html, "html"))
+        send_email(message.as_string())
+        return render_template('contact_success.html')
+    except:
+        return redirect(url_for('contact_fail'))
     
 @app.route('/contact/fail')
 def contact_fail():
@@ -237,9 +235,10 @@ def getClientData(dev_id):
     data = request.json
     sended_password = data['dev_key']
     dev = Developer.query.filter_by(id=dev_id).first()
+    lot = Parking_lot.query.filter_by(id=data['lot_id'])
     if (dev is None) or (not dev.password == sended_password):
         return jsonify("Invalid Credentials")
-    return jsonify(update_Empty_Slot(data['lot_id'], dev, data['empty_slots']))
+    return jsonify(update_Empty_Slot(lot, dev, data['empty_slots']))
 
 def create_app():
     return app
