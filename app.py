@@ -23,10 +23,13 @@ csp = {
         'cdn.jsdelivr.net',
         '*.gstatic.com',
         '*.googleapis.com',
-        '*.api.here.com'
+        '*.here.com',
+        '\'unsafe-eval\'',
+        '*.hereapi.com',
+        'blob:'
     ]
 }
-#talisman = Talisman(app, content_security_policy=csp)
+talisman = Talisman(app, content_security_policy=csp)
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
