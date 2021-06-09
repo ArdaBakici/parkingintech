@@ -93,11 +93,15 @@
         </table>
     </div>
 {% endif %}
-    <div class="container-flex mx-2">
-        <div style="height: 68vh;" id="mapContainer"></div>
-    </div>
-    
-    <div class="container-flex mx-2 text-center">
+<div class="container-flex mx-2">
+    <div style="height: 68vh;" id="mapContainer"></div>
+</div>
+<div class="container-flex mx-2 text-center">
+    {% if empty_area_len < 1 %}
         <img class="img-fluid" src="{{ url_for('static', filename='explanation_wide.jpeg') }}" alt="explanation">
-    </div>
+    {% else %}
+        <img class="img-fluid" src="{{ url_for('static', filename='explanation_space_available') }}" alt="explanation">
+    {% endif %}
+</div>
+
 {% endblock %}
