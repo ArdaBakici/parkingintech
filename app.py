@@ -242,7 +242,7 @@ def getClientData(dev_id):
     data = request.json
     sended_password = data['dev_key']
     dev = Developer.query.filter_by(id=dev_id).first()
-    lot = Parking_lot.query.filter_by(id=data['lot_id'])
+    lot = Parking_lot.query.filter_by(id=data['lot_id']).first()
     if (dev is None) or (not dev.password == sended_password):
         return jsonify("Invalid Credentials")
     return jsonify(update_Empty_Slot(lot, dev, data['empty_slots']))
