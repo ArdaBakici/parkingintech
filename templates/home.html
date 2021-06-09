@@ -69,11 +69,11 @@
         <h2 class="exp">Otoparkımızda boş yer bulunmamaktadır. Sizi civardaki en az trafiğe sahip otoparka yönlendireceğiz.</h2>
     </div>
 {% else %}
-    <div class="row my-3 mx-auto">
+    <div class="row my-2 mx-auto">
         <h2 class="exp">Otoparkımızda {{ empty_area_len }} boş yer bulunmaktadır.</h2>
     </div>
-    <div class="mx-auto my-3">
-        <table>
+    <div class="my-3">
+        <table class="mx-auto">
             {% for i in range(-(-slot_num//col_num)) %}
                 <tr>
                     {% if ((i+1) == (-(-slot_num//col_num))) and ((slot_num % col_num) != 0) %}
@@ -100,7 +100,7 @@
     {% if empty_area_len < 1 %}
         <img class="img-fluid" src="{{ url_for('static', filename='explanation_wide.jpeg') }}" alt="explanation">
     {% else %}
-        <img class="img-fluid" src="{{ url_for('static', filename='explanation_space_available') }}" alt="explanation">
+        <img class="img-fluid" src="{{ url_for('static', filename='explanation_space_available.jpeg') }}" alt="explanation">
     {% endif %}
 </div>
 
