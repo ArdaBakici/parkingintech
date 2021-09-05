@@ -208,6 +208,7 @@ def contact():
 @app.route('/contact/success', methods=['POST'])
 def contact_success():
     try:
+        Exception("No longer working")
         name = request.form.get('name' , None)
         email = request.form.get('email' , None)
         phone = request.form.get('phone' , None)
