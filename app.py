@@ -138,7 +138,7 @@ def calculateJamFactor(location):
     data_type = ".json"
     #latitude, longitude, diameter
     location = f"?prox={location[0]},{location[1]},{location[2]}"
-    api_key = "&apiKey=QxBLZ4IQQoRph5Y3sdxUUQyAjcR8Up4NQVto3nPZGJw"
+    api_key = "&apiKey=H9eImXWLstldKWISj-5HXAkiQpP5IOyV_uXjAc6lkyw"
     get_url =  base_url + url_path + resource + data_type + location + api_key
     res = requests.get(get_url)
     res_json = res.json()
