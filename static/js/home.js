@@ -74,7 +74,7 @@ function addInfoBubble(map, ui) {
 
 function loadMap() {
   var platform = new H.service.Platform({
-  'apikey': 'dpyW2Iu573KvzXn2Mv67G46FCiXJxPBmPXsdVbMd4zs'
+  'apikey': 'H9eImXWLstldKWISj-5HXAkiQpP5IOyV_uXjAc6lkyw'
   });
 
   var defaultLayers = platform.createDefaultLayers();
