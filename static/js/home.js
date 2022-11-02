@@ -87,7 +87,7 @@ function loadMap() {
       center: { lat: RECOMENDED_LOT[0], lng: RECOMENDED_LOT[1]},
     });
 
-  /*map.addEventListener('tap', evt => {
+  map.addEventListener('tap', evt => {
     ui.getBubbles().forEach(bub => ui.removeBubble(bub));
 
     if(!evt.target.getData) return;
@@ -99,7 +99,7 @@ function loadMap() {
     // show info bubble
     ui.addBubble(bubble);
     bubble.addClass("H_ib_noclose")
-  });*/
+  });
   
   // Enable the event system on the map instance:
   var mapEvents = new H.mapevents.MapEvents(map);
@@ -110,9 +110,9 @@ function loadMap() {
   map.addLayer(defaultLayers.vector.normal.traffic);
 
   // create default UI with layers provided by the platform
-  //var ui = H.ui.UI.createDefault(map, defaultLayers);
+  var ui = H.ui.UI.createDefault(map, defaultLayers);
 
-  //addInfoBubble(map, ui)
+  addInfoBubble(map, ui)
 
   const isMapAnimated = true;
   map.setZoom(14, isMapAnimated);
