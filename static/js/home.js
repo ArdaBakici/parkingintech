@@ -110,9 +110,9 @@ function loadMap() {
   map.addLayer(defaultLayers.vector.normal.traffic);
 
   // create default UI with layers provided by the platform
-  var ui = H.ui.UI.createDefault(map, defaultLayers);
+  //var ui = H.ui.UI.createDefault(map, defaultLayers);
 
-  addInfoBubble(map, ui)
+  //addInfoBubble(map, ui)
 
   const isMapAnimated = true;
   map.setZoom(14, isMapAnimated);
