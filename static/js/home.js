@@ -87,7 +87,7 @@ function loadMap() {
       center: { lat: RECOMENDED_LOT[0], lng: RECOMENDED_LOT[1]},
     });
 
-  map.addEventListener('tap', evt => {
+  /*map.addEventListener('tap', evt => {
     ui.getBubbles().forEach(bub => ui.removeBubble(bub));
 
     if(!evt.target.getData) return;
@@ -99,13 +99,13 @@ function loadMap() {
     // show info bubble
     ui.addBubble(bubble);
     bubble.addClass("H_ib_noclose")
-  });
+  });*/
   
   // Enable the event system on the map instance:
-  //var mapEvents = new H.mapevents.MapEvents(map);
+  var mapEvents = new H.mapevents.MapEvents(map);
 
   // Instantiate the default behavior, providing the mapEvents object:
-  //var behavior = new H.mapevents.Behavior(mapEvents);
+  var behavior = new H.mapevents.Behavior(mapEvents);
 
   map.addLayer(defaultLayers.vector.normal.traffic);
 
