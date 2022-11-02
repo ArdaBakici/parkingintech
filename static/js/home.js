@@ -47,7 +47,7 @@ function addInfoBubble(map, ui) {
     var lat_marker = element[2];
     var long_marker = element[3];
     var loc = {lat: lat_marker, lng: long_marker};
-    var info_html = `<div><p><b>${name}</p></b></div>` + `<div><p><b>Adres:</b> ${address}</p></div>` + `<div><a href="https://www.google.com/maps/search/?api=1&query=${lat_marker},${long_marker}" target="_blank">Google Maps'e yönlendir</a></div>`;
+    var info_html = `<div><p><b>${name}</p></b></div>` + `<div><p><b>Address:</b> ${address}</p></div>` + `<div><a href="https://www.google.com/maps/search/?api=1&query=${lat_marker},${long_marker}" target="_blank">Redirect to Google Maps</a></div>`;
     if (isRecommendedLot(lat_marker, long_marker)){
       addMarkerToGroup(group, recomended_icon, loc, info_html);
     }
@@ -62,7 +62,7 @@ function addInfoBubble(map, ui) {
     var lat_marker = element[2];
     var long_marker = element[3];
     var loc = {lat: lat_marker, lng: long_marker};
-    var info_html = `<div><p><b>${name}</p></b></div>` + `<div><p><b>Adres:</b> ${address}</p></div>` + `<div><a href="https://www.google.com/maps/search/?api=1&query=${lat_marker},${long_marker}" target="_blank">Google Maps'e yönlendir</a></div>`;
+    var info_html = `<div><p><b>${name}</p></b></div>` + `<div><p><b>Address:</b> ${address}</p></div>` + `<div><a href="https://www.google.com/maps/search/?api=1&query=${lat_marker},${long_marker}" target="_blank">Redirect to Google Maps</a></div>`;
     if (isRecommendedLot(lat_marker, long_marker)){
       addMarkerToGroup(group, recomended_icon, loc, info_html);
     }

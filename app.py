@@ -38,6 +38,10 @@ port = 587
 
 db = SQLAlchemy(app)
 
+devs = db.Table('devs',
+                db.Column('dev_id', db.Integer, db.ForeignKey('developer.id')),
+                db.Column('lot_id', db.Integer, db.ForeignKey('parking_lot.id')))
+
 class Developer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -209,10 +213,6 @@ def initiate_park():
 
 load()
 initiate_park()
-
-devs = db.Table('devs',
-                db.Column('dev_id', db.Integer, db.ForeignKey('developer.id')),
-                db.Column('lot_id', db.Integer, db.ForeignKey('parking_lot.id')))
 
 @app.route('/')
 def home():
