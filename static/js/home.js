@@ -86,7 +86,7 @@ function loadMap() {
       zoom: 8,
       center: { lat: RECOMENDED_LOT[0], lng: RECOMENDED_LOT[1]},
     });
-  
+
   map.addEventListener('tap', evt => {
     ui.getBubbles().forEach(bub => ui.removeBubble(bub));
 
@@ -102,10 +102,10 @@ function loadMap() {
   });
   
   // Enable the event system on the map instance:
-  var mapEvents = new H.mapevents.MapEvents(map);
+  //var mapEvents = new H.mapevents.MapEvents(map);
 
   // Instantiate the default behavior, providing the mapEvents object:
-  var behavior = new H.mapevents.Behavior(mapEvents);
+  //var behavior = new H.mapevents.Behavior(mapEvents);
 
   map.addLayer(defaultLayers.vector.normal.traffic);
 
