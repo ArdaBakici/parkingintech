@@ -12,6 +12,32 @@ from email.mime.multipart import MIMEMultipart
 TRAFFIC_RADIUS = 300 # diameter of circle that will be used to check traffic amount around a car park
 TRAFFIC_DATA_REFRESH_TIME = 60
 
+app = Flask(__name__)
+    
+csp = {
+    'default-src': [
+        '\'self\'',
+        '\'unsafe-inline\'',
+        'stackpath.bootstrapcdn.com',
+        'code.jquery.com',
+        'cdn.jsdelivr.net',
+        '*.gstatic.com',
+        '*.googleapis.com',
+        '*.here.com',
+        '\'unsafe-eval\'',
+        '*.hereapi.com',
+        'blob:'
+    ]
+}
+
+talisman = Talisman(app, content_security_policy=csp)
+app.secret_key = "sadSJdsZMxcMC123231"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+port = 587
+
+db = SQLAlchemy(app)
+
 class Developer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -180,32 +206,6 @@ def initiate_park():
         park_a = create_Park(name, address, park_loc)
         db.session.add(park_a)
     db.session.commit()
-
-app = Flask(__name__)
-    
-csp = {
-    'default-src': [
-        '\'self\'',
-        '\'unsafe-inline\'',
-        'stackpath.bootstrapcdn.com',
-        'code.jquery.com',
-        'cdn.jsdelivr.net',
-        '*.gstatic.com',
-        '*.googleapis.com',
-        '*.here.com',
-        '\'unsafe-eval\'',
-        '*.hereapi.com',
-        'blob:'
-    ]
-}
-
-talisman = Talisman(app, content_security_policy=csp)
-app.secret_key = "sadSJdsZMxcMC123231"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-port = 587
-
-db = SQLAlchemy(app)
 
 load()
 initiate_park()
