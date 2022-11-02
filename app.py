@@ -56,6 +56,7 @@ csp = {
         'blob:'
     ]
 }
+
 talisman = Talisman(app, content_security_policy=csp)
 app.secret_key = "sadSJdsZMxcMC123231"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parkdata.sqlite"
@@ -63,6 +64,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 port = 587
 
 db = SQLAlchemy(app)
+
+load()
+initiate_park()
 
 devs = db.Table('devs',
                 db.Column('dev_id', db.Integer, db.ForeignKey('developer.id')),
@@ -280,8 +284,6 @@ def create_app():
     return app
 
 if __name__ == '__main__':
-    load()
-    initiate_park()
     app.run(debug=True)
 
 # TODO get google maps data and if full reroute to another otopark 
