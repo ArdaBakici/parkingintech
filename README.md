@@ -26,3 +26,7 @@ Server holds a sqlite database for 3 different types of objects
 Database is updated via POST request to /data/update/<dev_id>. Every developer has a dev_id, password and array of parking lots they can modify.
 Every normal car park has an address and avarage traffic jam value. Traffic jam value is updated every 5 minutes using HERE Maps REST APIs.
 Every smart parking lot has aviable space, total space and address values. Avaible space value can be modified by developer accounts.
+
+License
+---
+Commercial use is forbidden.
