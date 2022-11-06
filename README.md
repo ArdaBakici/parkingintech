@@ -4,9 +4,11 @@
 
 <br>
 
-# **<a href="https://akilli-otopark.herokuapp.com/">Parking-in.tech</a>**
+# **<a href="https://parking-in.tech/">Parking-in.tech</a>**
 
-Frontend and backend side codes for the website <a href="https://akilli-otopark.herokuapp.com/">Parking-in.tech</a>.
+## See live demo at https://parking-in.tech
+
+Frontend and backend side codes for the website <a href="https://parking-in.tech/">Parking-in.tech</a>.
 
 Parking-in.tech is a project that aims to find a practical and economical solution
 to parking in cities thus minimizing energy and time lost.
