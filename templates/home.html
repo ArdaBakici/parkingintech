@@ -104,11 +104,11 @@
 <div class="container-flex mx-2">
     <div style="height: 68vh;" id="mapContainer"></div>
 </div>
-<div class="container-fluid flex-grow-1 mx-2 text-center">
+<div class="container-fluid mx-2 text-center">
     {% if empty_area_len < 1 %}
-        <img class="img-fluid" src="{{ url_for('static', filename='explanation_wide.jpeg') }}" alt="explanation">
+        <img style="height: 13vh" src="{{ url_for('static', filename='explanation_wide.jpeg') }}" alt="explanation">
     {% else %}
-        <img class="img-fluid" src="{{ url_for('static', filename='explanation_space_available.jpeg') }}" alt="explanation">
+        <img style="height: 13vh" src="{{ url_for('static', filename='explanation_space_available.jpeg') }}" alt="explanation">
     {% endif %}
 </div>
 
