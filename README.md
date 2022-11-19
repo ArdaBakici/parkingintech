@@ -4,6 +4,10 @@
 
 <br>
 
+<p align="center">
+<img align="center" src="https://github.com/ArdaBakici/parkingintech/blob/main/static/screenshot.png" width=739 height=349>  
+</p>
+
 # **<a href="https://parking-in.tech/">Parking-in.tech</a>**
 
 ## See live demo at https://parking-in.tech
